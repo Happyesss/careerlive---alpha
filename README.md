@@ -9,8 +9,7 @@
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-[Live Demo](https://careerlive.vercel.app) • [Documentation](#documentation) • [API Reference](#api-reference) • [Contributing](#contributing)
-
+[Live Demo](https://careerlive.vercel.app) 
 </div>
 
 ---
@@ -235,67 +234,6 @@ The application is fully responsive with:
 
 ---
 
-## 📱 Mobile Responsive Features
-
-### Responsive Breakpoints
-
-- **Mobile**: 320px - 640px
-- **Tablet**: 640px - 1024px  
-- **Desktop**: 1024px+
-
-### Mobile Optimizations
-
-1. **Touch Controls**: Larger touch targets (44px minimum)
-2. **Horizontal Scrolling**: Control bar adapts to narrow screens
-3. **Progressive Disclosure**: Labels hidden on small screens
-4. **Full-screen Modes**: Optimized video layouts
-5. **Gesture Support**: Swipe and tap interactions
-
-### Implementation Example
-
-```tsx
-// Responsive button sizing
-<button className={`
-  w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12
-  px-1 py-2 sm:px-2 sm:py-2 md:px-4 md:py-2
-  flex items-center gap-1 md:gap-2
-  flex-shrink-0
-`}>
-  <Icon size={12} className="sm:w-[14px] md:w-[18px]" />
-  <span className="hidden sm:inline">Label</span>
-</button>
-```
-
----
-
-## 🚀 Deployment
-
-### Vercel Deployment (Recommended)
-
-1. **Connect Repository**
-   ```bash
-   npm install -g vercel
-   vercel login
-   vercel --prod
-   ```
-
-2. **Environment Variables**: Add all environment variables in Vercel dashboard
-
-3. **Custom Domain** (Optional)
-   ```bash
-   vercel domains add yourdomain.com
-   ```
-
-### Production Checklist
-
-- [ ] Environment variables configured
-- [ ] API keys valid and secure
-- [ ] HTTPS enabled
-- [ ] Error monitoring setup
-- [ ] Performance monitoring active
-
----
-
 ## 🤝 Contributing
 
 We welcome contributions! Please follow these steps:
@@ -385,14 +323,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📞 Support
-
-### Getting Help
-
-- 🐛 **Issues**: [GitHub Issues](https://github.com/Happyesss/careerlive/issues)
-- 📖 **Docs**: [Documentation](https://docs.careerlive.com)
-
----
 
 <div align="center">
 
