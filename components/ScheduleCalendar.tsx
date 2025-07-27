@@ -191,10 +191,11 @@ const generateTimeSlots = (date: Date | null) => {
 
             {/* Calendar Days */}
             <div className="grid grid-cols-7 gap-1">
+
               {days.map((day, index) => {
-                if (!day) {
-                  return <div key={index} className="p-2 h-12"></div>;
-                }
+                   if (!day) {
+                   return <div key={`empty-${index}`} className="p-2 h-12"></div>;
+              }
 
                 const dayEvents = getEventsForDate(day);
                 const isSelected = selectedDate?.toDateString() === day.toDateString();
@@ -203,7 +204,7 @@ const generateTimeSlots = (date: Date | null) => {
 
                 return (
                   <button
-                    key={day.getDate()}
+                    key={day.toISOString()}
                     onClick={() => !isPast && setSelectedDate(day)}
                     disabled={isPast}
                     className={`
