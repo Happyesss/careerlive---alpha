@@ -98,16 +98,33 @@ const ScheduleCalendar = ({ onScheduleMeeting, onClose }: ScheduleCalendarProps)
     return date < today;
   };
 
-  const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 0; hour < 24; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
-        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        slots.push(timeString);
+const generateTimeSlots = (date: Date | null) => {
+  const slots: string[] = [];
+
+  const now = new Date();
+
+  // Loop through each hour of the day
+  for (let hour = 0; hour < 24; hour++) {
+    // For each hour, add 30-minute interval slots (e.g., 00:00, 00:30, 01:00, ...)
+    for (let minute = 0; minute < 60; minute += 30) {
+      // Create a new Date object based on the selected date
+      const slot = new Date(date!);
+      slot.setHours(hour, minute, 0, 0); // Set hours, minutes, and reset seconds & milliseconds
+
+      // If the selected date is today, only include future time slots
+      if (date && date.toDateString() === now.toDateString()) {
+        if (slot > now) {
+          slots.push(`${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
+        }
+      } else {
+        // If the selected date is not today, include all time slots
+        slots.push(`${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
       }
     }
-    return slots;
-  };
+  }
+
+  return slots;
+};
 
   const handleSchedule = () => {
     if (!selectedDate) return;
@@ -123,7 +140,7 @@ const ScheduleCalendar = ({ onScheduleMeeting, onClose }: ScheduleCalendarProps)
   };
 
   const days = getDaysInMonth(currentDate);
-  const timeSlots = generateTimeSlots();
+  const timeSlots = generateTimeSlots(selectedDate);
 
   return (
     <div className="bg-dark-1 rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
