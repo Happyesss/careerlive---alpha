@@ -143,7 +143,7 @@ const MeetingCard = ({
       <div className="flex items-center gap-3 mb-6">
         <div className="flex -space-x-2">
           {avatarImages.slice(0, 4).map((img, index) => (
-            <Image
+            <img
               key={index}
               src={img}
               alt="participant"

@@ -11,11 +11,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'getstream.io',
-      },
-      {
-        protocol: 'https',
-        hostname: 'ui-avatars.com', // 👈 Add this line
-      }
+       }
     ],
   },
 };
