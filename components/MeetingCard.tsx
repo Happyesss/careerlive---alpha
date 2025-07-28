@@ -92,22 +92,50 @@ const MeetingCard = ({
     }
   };
 
+
+
+const getDateLabel = (someDate: Date) => {
+  const today = new Date();
+
+  // Clone today's date to create a "tomorrow" date
+  const tomorrow = new Date();
+  // Increment the day by 1 to represent tomorrow
+  tomorrow.setDate(today.getDate() + 1);
+
+  // Helper function to check if two dates fall on the same calendar day
+  const isSameDay = (d1: Date, d2: Date) =>
+    d1.getDate() === d2.getDate() &&        // Compare day
+    d1.getMonth() === d2.getMonth() &&      // Compare month
+    d1.getFullYear() === d2.getFullYear();  // Compare year
+
+  // If the given date is today, return "Today"
+  if (isSameDay(someDate, today)) return "Today";
+
+  // If the given date is tomorrow, return "Tomorrow"
+  if (isSameDay(someDate, tomorrow)) return "Tomorrow";
+
+  // Otherwise, return the date in default localized format
+  return someDate.toLocaleDateString();
+};
+
+
   return (
-    <div className="group bg-dark-1 rounded-xl p-6 border border-dark-3 hover:border-blue-1/30 transition-all duration-300 hover:shadow-lg hover:shadow-black/20">
+    <div className="group bg-dark-1  rounded-xl p-6 border border-dark-3 hover:border-blue-1/30 transition-all duration-300 hover:shadow-lg hover:shadow-black/20">
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between mb-4 ">
+        <div className="flex items-center gap-3 ">
           <div className="bg-blue-1/10 p-2 rounded-lg">
             <Image src={icon} alt="meeting" width={20} height={20} />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white group-hover:text-blue-1 transition-colors">
-              {title}
-            </h3>
+             <h3 className="text-lg break-all font-semibold text-white  group-hover:text-blue-1 transition-colors">
+                   {title}
+             </h3>
+
             <div className="flex items-center gap-4 mt-1">
               <div className="flex items-center gap-1 text-sky-2 text-sm">
                 <Calendar className="w-3 h-3" />
-                <span>{formatDate(date)}</span>
+                    <span>{getDateLabel(new Date(date))}</span>
               </div>
               <div className="flex items-center gap-1 text-sky-2 text-sm">
                 <Clock className="w-3 h-3" />
