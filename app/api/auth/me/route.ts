@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
           firstName: user.firstName,
           lastName: user.lastName,
           imageUrl: user.imageUrl,
+          role : user.role,
         },
       },
       { status: 200 }

@@ -45,7 +45,7 @@ const Home = () => {
         {/* Welcome Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back{user ? `, ${user.firstName}` : ''}!
+            Welcome back{user ? `, ${user.firstName}` : ''}! ROLE : {user ? user.role : 'null'}
           </h1>
           <p className="text-sky-2">Ready to connect with your team?</p>
         </div>

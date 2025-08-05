@@ -104,24 +104,27 @@ const MeetingTypeList = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-      <HomeCard
+      {user.role === "mentor" ?  <HomeCard
         img="/icons/add-meeting.svg"
         title="New Meeting"
         description="Start an instant meeting"
         handleClick={() => setMeetingState('isInstantMeeting')}
-      />
+      /> : null}
+     
       <HomeCard
         img="/icons/join-meeting.svg"
         title="Join Meeting"
         description="via invitation link"
         handleClick={() => setMeetingState('isJoiningMeeting')}
       />
-      <HomeCard
+
+      {user.role === "mentor" ?  <HomeCard
         img="/icons/schedule.svg"
         title="Schedule Meeting"
         description="Plan your meeting"
         handleClick={() => setMeetingState('isScheduleMeeting')}
-      />
+      /> : null}
+     
       <HomeCard
         img="/icons/recordings.svg"
         title="Recording Quick Guide"

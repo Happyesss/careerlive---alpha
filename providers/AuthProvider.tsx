@@ -8,6 +8,7 @@ export interface User {
   firstName: string;
   lastName: string;
   imageUrl?: string;
+  role: string; // Added role to User interface
 }
 
 interface AuthContextType {
