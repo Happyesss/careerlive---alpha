@@ -6,7 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Calendar, Clock, MessageSquare, Search, Send, Users, Video } from 'lucide-react';
+import { Calendar, Clock, MessageSquare, Search, Send, Users, Video, CheckCircle, FileText, Target } from 'lucide-react';
 import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
 import { useGetCalls } from '@/hooks/useGetCalls';
 
@@ -261,7 +261,7 @@ const MentorScheduler: React.FC<MentorSchedulerProps> = ({ onClose, selectedBook
 
       if (response.ok) {
         toast({
-          title: "Meeting Scheduled! 🎉",
+          title: "Meeting Scheduled!",
           description: `Meeting link sent to ${selectedMentee.firstName}`,
         });
         
@@ -313,7 +313,10 @@ const MentorScheduler: React.FC<MentorSchedulerProps> = ({ onClose, selectedBook
       {/* Pending Booking Request Cards */}
       {pendingBookings.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-white mb-3">📋 Pending Requests (Click to Auto-Fill)</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <FileText className="h-4 w-4 text-blue-1" />
+            <h3 className="text-lg font-semibold text-white">Pending Requests (Click to Auto-Fill)</h3>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {pendingBookings.map((booking) => (
               <Card 
@@ -358,7 +361,10 @@ const MentorScheduler: React.FC<MentorSchedulerProps> = ({ onClose, selectedBook
 
       {/* Scheduler Form */}
       <Card id="scheduler-form" className="bg-dark-2 border-dark-3 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">🎯 Schedule Meeting</h3>
+        <div className="flex items-center gap-2 mb-4">
+          <Target className="h-4 w-4 text-blue-1" />
+          <h3 className="text-lg font-semibold text-white">Schedule Meeting</h3>
+        </div>
         
         {/* Mentee Selection */}
         <div className="space-y-4">

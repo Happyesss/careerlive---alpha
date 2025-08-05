@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import MeetingTypeList from '@/components/MeetingTypeList';
 import PendingBookingCards from '@/components/PendingBookingCards';
-import { Clock, Calendar, TrendingUp, Users, Bell } from 'lucide-react';
+import UpcomingBookings from '@/components/UpcomingBookings';
+import { Clock, Calendar, TrendingUp, Users, Bell, Video, Lightbulb, Monitor, MicOff } from 'lucide-react';
 import { useGetCalls } from '@/hooks/useGetCalls';
 import { useAuth } from '@/providers/AuthProvider';
 
@@ -128,6 +129,9 @@ const Home = () => {
           />
         </div>
 
+        {/* Upcoming Bookings for Mentees */}
+        <UpcomingBookings />
+
         {/* Pending Booking Requests */}
         {user?.role === 'mentor' && (
           <div className="mb-10">
@@ -230,13 +234,13 @@ const Home = () => {
             <h3 className="text-xl font-semibold text-white mb-4">Meeting Tips</h3>
             <div className="space-y-4">
               {[
-                { tip: "Test your camera and microphone before important meetings", icon: "🎥" },
-                { tip: "Use a quiet, well-lit environment for better video quality", icon: "💡" },
-                { tip: "Share your screen for more engaging presentations", icon: "📺" },
-                { tip: "Mute yourself when not speaking to reduce background noise", icon: "🔇" },
+                { tip: "Test your camera and microphone before important meetings", icon: <Video className="h-4 w-4 text-blue-1" /> },
+                { tip: "Use a quiet, well-lit environment for better video quality", icon: <Lightbulb className="h-4 w-4 text-yellow-500" /> },
+                { tip: "Share your screen for more engaging presentations", icon: <Monitor className="h-4 w-4 text-green-500" /> },
+                { tip: "Mute yourself when not speaking to reduce background noise", icon: <MicOff className="h-4 w-4 text-red-500" /> },
               ].map((item, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-dark-2">
-                  <span className="text-lg">{item.icon}</span>
+                  <div className="mt-1">{item.icon}</div>
                   <p className="text-sm text-sky-2 leading-relaxed">{item.tip}</p>
                 </div>
               ))}

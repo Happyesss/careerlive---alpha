@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
       booking.status = 'confirmed';
       booking.scheduledDateTime = meetingDate;
       booking.duration = duration;
+      booking.meetingLink = meetingLink;
       await booking.save();
     } else {
       // Create new booking (mentor initiated)
@@ -77,6 +78,7 @@ export async function POST(request: NextRequest) {
         scheduledDateTime: meetingDate,
         description: 'Meeting scheduled by mentor',
         duration,
+        meetingLink,
         status: 'confirmed'
       });
       await booking.save();

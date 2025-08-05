@@ -305,8 +305,17 @@ const MEETING_CONFIRMATION_TEMPLATE = (mentor: IUser, booking: IBooking, meeting
                     💡 <strong>Meeting Link:</strong> ${meetingLink}
                 </p>
                 <p style="margin: 10px 0 0 0; color: #92400e; font-size: 14px;">
-                    Save this link! You can use it to join the meeting at the scheduled time.
+                    Save this link! You can also find it in your CareerLive dashboard under "Upcoming Meetings".
                 </p>
+            </div>
+
+            <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 20px 0;">
+                <h4 style="margin: 0 0 10px 0; color: #1e40af;">📱 Access Your Meeting:</h4>
+                <ul style="margin: 0; color: #1e40af; line-height: 1.6;">
+                    <li>Click the link above to join directly</li>
+                    <li>Visit your <a href="${process.env.NEXT_PUBLIC_BASE_URL}/upcoming" style="color: #1e40af; text-decoration: underline;">CareerLive Dashboard</a> to see upcoming meetings</li>
+                    <li>You'll receive a join button 15 minutes before the meeting</li>
+                </ul>
             </div>
 
             <p style="color: #64748b; font-size: 14px; line-height: 1.6;">

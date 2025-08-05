@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/providers/AuthProvider';
 import { useToast } from '@/components/ui/use-toast';
 import { Card } from '@/components/ui/card';
-import { Calendar, Clock, MessageSquare, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar, Clock, MessageSquare, CheckCircle, XCircle, AlertCircle, Video, ExternalLink } from 'lucide-react';
 
 interface Booking {
   _id: string;
@@ -24,6 +25,7 @@ interface Booking {
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   description?: string;
   duration: number;
+  meetingLink?: string;
   createdAt: string;
 }
 
@@ -273,9 +275,26 @@ const BookingsList: React.FC = () => {
                 {new Date(booking.createdAt).toLocaleDateString()}
               </div>
               
-              {booking.status === 'confirmed' && (
-                <div className="text-xs text-green-500 font-medium">
-                  ✅ Confirmed - Awaiting link
+              {booking.status === 'confirmed' && booking.meetingLink && (
+                <Button
+                  onClick={() => window.open(booking.meetingLink!, '_blank')}
+                  size="sm"
+                  className="bg-green-500 hover:bg-green-600 text-white"
+                >
+                  <Video className="h-3 w-3 mr-1" />
+                  Join Meeting
+                </Button>
+              )}
+              
+              {booking.status === 'confirmed' && !booking.meetingLink && (
+                <div className="text-xs text-yellow-500 font-medium">
+                  ⏳ Link pending
+                </div>
+              )}
+              
+              {booking.status === 'pending' && (
+                <div className="text-xs text-yellow-500 font-medium">
+                  ⏳ Awaiting confirmation
                 </div>
               )}
             </div>

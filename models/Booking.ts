@@ -7,7 +7,8 @@ export interface IBooking extends Document {
   scheduledDateTime: Date;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   description?: string;
-  duration: number; // Duration in minutes, default 60
+  duration: number;
+  meetingLink?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +40,10 @@ const bookingSchema = new Schema<IBooking>({
   duration: {
     type: Number,
     default: 60, // 60 minutes default
+  },
+  meetingLink: {
+    type: String,
+    default: '',
   },
 }, {
   timestamps: true,

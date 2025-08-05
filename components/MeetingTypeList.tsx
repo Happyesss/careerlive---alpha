@@ -16,6 +16,7 @@ import { Textarea } from './ui/textarea';
 import ReactDatePicker from 'react-datepicker';
 import { useToast } from './ui/use-toast';
 import { Input } from './ui/input';
+import { Calendar, X } from 'lucide-react';
 
 const initialValues = {
   dateTime: new Date(),
@@ -161,15 +162,18 @@ const MeetingTypeList = ({ selectedBooking, onClearBooking }: { selectedBooking?
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-dark-1 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-dark-1 border-b border-dark-3 p-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white">📅 Schedule Meeting with Mentee</h2>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-blue-1" />
+                <h2 className="text-xl font-semibold text-white">Schedule Meeting with Mentee</h2>
+              </div>
               <button
                 onClick={() => {
                   setMeetingState(undefined);
                   onClearBooking?.();
                 }}
-                className="text-sky-2 hover:text-white text-xl"
+                className="text-sky-2 hover:text-white"
               >
-                ✕
+                <X className="h-5 w-5" />
               </button>
             </div>
             <div className="p-6">
