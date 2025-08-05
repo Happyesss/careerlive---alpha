@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
           firstName: user.firstName,
           lastName: user.lastName,
           imageUrl: user.imageUrl,
+          role: user.role, // Include user role in the response
         },
       },
       { status: 200 }

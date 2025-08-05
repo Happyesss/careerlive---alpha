@@ -80,7 +80,7 @@ const UserButton = () => {
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-dark-3" />
         <DropdownMenuItem
-          className="text-white focus:bg-dark-2 cursor-pointer"
+          className="text-white hover:text-white  cursor-pointer"
           onClick={handleLogout}
         >
           <LogOut className="mr-2 h-4 w-4" />
