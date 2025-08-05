@@ -142,6 +142,7 @@ const CallList = ({ type, sortBy }: { type: 'ended' | 'upcoming' | 'recordings',
               buttonIcon1={type === 'recordings' ? '/icons/play.svg' : undefined}
               buttonText={type === 'recordings' ? 'Play' : (type === 'ended' && !isOngoing ? undefined : 'Start')}
               joinedViaLink={false}
+              call={type !== 'recordings' ? (meeting as Call) : undefined}
               handleClick={
                 type === 'recordings'
                   ? () => router.push(`${(meeting as CallRecording).url}`)

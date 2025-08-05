@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { Calendar, Clock, Users, ExternalLink, Play } from "lucide-react";
+import { Call } from '@stream-io/video-react-sdk';
 
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
-import { avatarImages } from "@/constants";
 import { useToast } from "./ui/use-toast";
 
 interface MeetingCardProps {
@@ -19,6 +19,7 @@ interface MeetingCardProps {
   link: string;
   isOngoing?: boolean;
   joinedViaLink?: boolean;
+  call?: Call; // Add call prop to access actual members
 }
 
 const MeetingCard = ({
@@ -32,8 +33,26 @@ const MeetingCard = ({
   buttonText,
   isOngoing,
   joinedViaLink,
+  call,
 }: MeetingCardProps) => {
   const { toast } = useToast();
+
+  // Get actual call members instead of static avatars
+  const getCallMembers = () => {
+    if (!call?.state?.members) return [];
+    
+    return call.state.members.map((member, index) => {
+      const name = member.user.name || member.user.id || `User ${index + 1}`;
+      return {
+        name,
+        image: member.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff&size=32`,
+        id: member.user.id
+      };
+    });
+  };
+
+  const callMembers = getCallMembers();
+  const memberCount = callMembers.length;
 
   const formatDate = (dateString: string) => {
     try {
@@ -170,25 +189,25 @@ const getDateLabel = (someDate: Date) => {
       {/* Participants */}
       <div className="flex items-center gap-3 mb-6">
         <div className="flex -space-x-2">
-          {avatarImages.slice(0, 4).map((img, index) => (
+          {callMembers.slice(0, 4).map((member, index) => (
             <img
-              key={index}
-              src={img}
-              alt="participant"
+              key={member.id || index}
+              src={member.image}
+              alt={member.name}
               width={28}
               height={28}
               className="rounded-full border-2 border-dark-1"
             />
           ))}
-          {avatarImages.length > 4 && (
+          {callMembers.length > 4 && (
             <div className="w-7 h-7 rounded-full bg-dark-3 border-2 border-dark-1 flex items-center justify-center">
-              <span className="text-xs text-sky-2">+{avatarImages.length - 4}</span>
+              <span className="text-xs text-sky-2">+{callMembers.length - 4}</span>
             </div>
           )}
         </div>
         <div className="flex items-center gap-1 text-sky-2 text-sm">
           <Users className="w-3 h-3" />
-          <span>{avatarImages.length} participants</span>
+          <span>{memberCount} participant{memberCount !== 1 ? 's' : ''}</span>
         </div>
       </div>
 

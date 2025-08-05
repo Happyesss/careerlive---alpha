@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import HomeCard from './HomeCard';
 import MeetingModal from './MeetingModal';
 import ScheduleCalendar from './ScheduleCalendar';
+import BookingModal from './BookingModal';
+import MentorScheduler from './MentorScheduler';
 import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
 import { useAuth } from '@/providers/AuthProvider';
 import Loader from './Loader';
@@ -21,16 +23,23 @@ const initialValues = {
   link: '',
 };
 
-const MeetingTypeList = () => {
+const MeetingTypeList = ({ selectedBooking, onClearBooking }: { selectedBooking?: any; onClearBooking?: () => void }) => {
   const router = useRouter();
   const [meetingState, setMeetingState] = useState<
-    'isScheduleMeeting' | 'isJoiningMeeting' | 'isInstantMeeting' | undefined
+    'isScheduleMeeting' | 'isJoiningMeeting' | 'isInstantMeeting' | 'isBookingMentor' | 'isMentorScheduling' | undefined
   >(undefined);
   const [values, setValues] = useState(initialValues);
   const [callDetail, setCallDetail] = useState<Call>();
   const client = useStreamVideoClient();
   const { user } = useAuth();
   const { toast } = useToast();
+
+  // Open mentor scheduling modal when booking is selected
+  React.useEffect(() => {
+    if (selectedBooking && user?.role === 'mentor') {
+      setMeetingState('isMentorScheduling');
+    }
+  }, [selectedBooking, user]);
 
   const createMeeting = async () => {
     if (!client || !user) return;
@@ -118,11 +127,20 @@ const MeetingTypeList = () => {
         handleClick={() => setMeetingState('isJoiningMeeting')}
       />
 
+      {user.role === "mentee" ? (
+        <HomeCard
+          img="/icons/schedule.svg"
+          title="Schedule Booking"
+          description="Book a session with mentor"
+          handleClick={() => setMeetingState('isBookingMentor')}
+        />
+      ) : null}
+
       {user.role === "mentor" ?  <HomeCard
         img="/icons/schedule.svg"
         title="Schedule Meeting"
-        description="Plan your meeting"
-        handleClick={() => setMeetingState('isScheduleMeeting')}
+        description="Schedule with mentees"
+        handleClick={() => setMeetingState('isMentorScheduling')}
       /> : null}
      
       <HomeCard
@@ -131,6 +149,41 @@ const MeetingTypeList = () => {
         description="Learn recording features"
         handleClick={() => router.push('/recordings')}
       />
+
+      {/* Booking Modal for Mentees */}
+      <BookingModal
+        isOpen={meetingState === 'isBookingMentor'}
+        onClose={() => setMeetingState(undefined)}
+      />
+
+      {/* Mentor Scheduling Modal */}
+      {meetingState === 'isMentorScheduling' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-dark-1 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-dark-1 border-b border-dark-3 p-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-white">📅 Schedule Meeting with Mentee</h2>
+              <button
+                onClick={() => {
+                  setMeetingState(undefined);
+                  onClearBooking?.();
+                }}
+                className="text-sky-2 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6">
+              <MentorScheduler 
+                onClose={() => {
+                  setMeetingState(undefined);
+                  onClearBooking?.();
+                }} 
+                selectedBooking={selectedBooking}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {!callDetail ? (
         <>

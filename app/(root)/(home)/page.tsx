@@ -1,7 +1,8 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import MeetingTypeList from '@/components/MeetingTypeList';
-import { Clock, Calendar, TrendingUp, Users } from 'lucide-react';
+import PendingBookingCards from '@/components/PendingBookingCards';
+import { Clock, Calendar, TrendingUp, Users, Bell } from 'lucide-react';
 import { useGetCalls } from '@/hooks/useGetCalls';
 import { useAuth } from '@/providers/AuthProvider';
 
@@ -9,6 +10,16 @@ const Home = () => {
   const now = new Date();
   const { endedCalls, upcomingCalls, isLoading } = useGetCalls();
   const { user } = useAuth();
+  const [selectedBooking, setSelectedBooking] = useState(null);
+
+  const handleBookingClick = (booking: any) => {
+    setSelectedBooking(booking);
+    // This will be handled by MeetingTypeList to open the scheduling modal
+  };
+
+  const handleClearBooking = () => {
+    setSelectedBooking(null);
+  };
 
   const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   const date = (new Intl.DateTimeFormat('en-US', { dateStyle: 'full' })).format(now);
@@ -111,8 +122,25 @@ const Home = () => {
               <span className="text-sm">All systems operational</span>
             </div>
           </div>
-          <MeetingTypeList />
+          <MeetingTypeList 
+            selectedBooking={selectedBooking} 
+            onClearBooking={handleClearBooking}
+          />
         </div>
+
+        {/* Pending Booking Requests */}
+        {user?.role === 'mentor' && (
+          <div className="mb-10">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">Pending Booking Requests</h2>
+              <div className="flex items-center gap-2 text-sky-2">
+                <Bell className="w-4 h-4" />
+                <span className="text-sm">Click to schedule</span>
+              </div>
+            </div>
+            <PendingBookingCards onBookingClick={handleBookingClick} />
+          </div>
+        )}
 
         {/* Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

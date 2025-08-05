@@ -73,8 +73,27 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
+    console.error('Registration error:', error);
+    
+    // Handle specific MongoDB errors
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 11000) {
+      return NextResponse.json(
+        { error: 'User already exists with this email' },
+        { status: 400 }
+      );
+    }
+    
+    // Handle validation errors
+    if (typeof error === 'object' && error !== null && 'name' in error && (error as any).name === 'ValidationError') {
+      const validationErrors = Object.values((error as any).errors).map((err: any) => err.message);
+      return NextResponse.json(
+        { error: 'Validation error', details: validationErrors },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: (error as any).message },
       { status: 500 }
     );
   }
