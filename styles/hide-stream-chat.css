@@ -1,0 +1,19 @@
+/* Hide Stream Video SDK's default chat components */
+.str-video__chat-button,
+.str-video__chat-panel,
+.str-video__chat-toggle,
+[data-testid="chat-button"],
+[class*="chat-button"],
+[class*="ChatButton"] {
+  display: none !important;
+}
+
+/* Hide any chat-related UI elements from Stream SDK */
+.str-video__call-controls .str-video__chat-button {
+  display: none !important;
+}
+
+/* Ensure our custom chat panel has proper z-index */
+.custom-chat-panel {
+  z-index: 9999 !important;
+}

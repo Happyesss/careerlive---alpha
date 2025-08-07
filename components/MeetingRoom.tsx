@@ -13,6 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Users, LayoutList, Video, Square, Mic, MicOff, Camera, CameraOff, Monitor, MonitorOff } from 'lucide-react';
 import { useLocalRecording } from '@/hooks/useLocalRecording';
 import RecordingDownloadModal from './RecordingDownloadModal';
+import InCallChatPanel from './InCallChatPanel';
 
 import {
   DropdownMenu,
@@ -245,6 +246,9 @@ const MeetingRoom = () => {
         onDownload={downloadRecording}
         onDiscard={discardRecording}
       />
+
+      {/* In-Call Chat Panel */}
+      <InCallChatPanel />
     </section>
   );
 };

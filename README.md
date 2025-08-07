@@ -48,6 +48,7 @@ CareerLive is a comprehensive mentoring platform that connects mentees with ment
 - **Instant Meetings**: Start impromptu video calls immediately
 - **Scheduled Sessions**: Pre-planned meetings with calendar integration
 - **Meeting Rooms**: Dedicated spaces for ongoing mentoring relationships
+- **In-Call Chat Panel**: Teams-style real-time messaging during video calls
 - **Advanced Controls**: Screen sharing, recording, participant management
 - **Mobile Support**: Full-featured mobile video calling experience
 
@@ -518,6 +519,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[Shadcn/ui](https://ui.shadcn.com/)** - Beautiful and accessible UI components
 - **[Lucide React](https://lucide.dev/)** - Consistent and customizable icons
 - **[Vercel](https://vercel.com/)** - Seamless deployment platform
+
+---
+
+
+---
+
+## 🆕 Recent Changes (August 2025)
+
+### Feedback System
+- **Session Feedback:** Users are now prompted to submit feedback after each meeting, including ratings and comments.
+- **Feedback Dashboard:** Admins and mentors can view feedback analytics and recent feedback in a new dashboard.
+- **API Endpoints:** Added `/api/feedback` and `/api/feedback/[id]` for submitting, retrieving, and deleting feedback.
+- **Automatic Feedback Prompt:** If a user leaves a meeting without submitting feedback, they will be prompted on their next visit.
+
+### In-Call Chat Improvements
+- **Custom In-Call Chat Panel:** Replaced Stream Video SDK’s default chat with a custom chat panel for real-time messaging during meetings.
+- **Emoji Support & Unread Indicators:** Enhanced chat with emoji quick-reactions and unread message badges.
+- **Stream Chat Integration (Planned):** UI is ready for future Stream Chat integration.
+
+### UI/UX Enhancements
+- **End Call Button:** Now prompts for feedback after ending or leaving a call.
+- **Feedback Icon:** Added a new feedback SVG icon.
+- **Hide Default Chat:** Stream SDK’s default chat UI is now hidden in favor of the custom chat panel.
 
 ---
 

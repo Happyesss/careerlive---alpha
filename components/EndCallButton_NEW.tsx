@@ -13,11 +13,13 @@ import {
   DialogDescription,
   DialogFooter
 } from './ui/dialog';
+import FeedbackModal from './FeedbackModal';
 
 const EndCallButton = () => {
   const call = useCall();
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [userInfo, setUserInfo] = useState<{
     userId: string;
     userName: string;
@@ -54,24 +56,16 @@ const EndCallButton = () => {
   }, [localParticipant]);
 
   const endCallForEveryone = async () => {
-    setIsDialogOpen(false);
-    
     try {
-      // Store feedback info for home page
-      if (userInfo) {
-        const feedbackData = {
-          meetingId: call.id,
-          mentorId: getMentorMenteeIds().mentorId,
-          menteeId: getMentorMenteeIds().menteeId,
-          userName: userInfo.userName,
-          userEmail: userInfo.userEmail,
-          timestamp: Date.now()
-        };
-        localStorage.setItem('pendingFeedback', JSON.stringify(feedbackData));
-      }
-      
       await call.endCall();
-      router.push('/');
+      setIsDialogOpen(false);
+      
+      // Show feedback modal before redirecting
+      if (userInfo) {
+        setShowFeedbackModal(true);
+      } else {
+        router.push('/');
+      }
     } catch (error) {
       console.error('Error ending call:', error);
       router.push('/');
@@ -79,28 +73,30 @@ const EndCallButton = () => {
   };
   
   const leaveCall = async () => {
-    setIsDialogOpen(false);
-    
     try {
-      // Store feedback info for home page
-      if (userInfo) {
-        const feedbackData = {
-          meetingId: call.id,
-          mentorId: getMentorMenteeIds().mentorId,
-          menteeId: getMentorMenteeIds().menteeId,
-          userName: userInfo.userName,
-          userEmail: userInfo.userEmail,
-          timestamp: Date.now()
-        };
-        localStorage.setItem('pendingFeedback', JSON.stringify(feedbackData));
-      }
-      
       await call.leave();
-      router.push('/');
+      setIsDialogOpen(false);
+      
+      // Show feedback modal before redirecting
+      if (userInfo) {
+        setShowFeedbackModal(true);
+      } else {
+        router.push('/');
+      }
     } catch (error) {
       console.error('Error leaving call:', error);
       router.push('/');
     }
+  };
+
+  const handleFeedbackComplete = () => {
+    setShowFeedbackModal(false);
+    router.push('/');
+  };
+
+  const handleFeedbackSkip = () => {
+    setShowFeedbackModal(false);
+    router.push('/');
   };
 
   // Get mentor and mentee IDs for feedback
@@ -177,6 +173,19 @@ const EndCallButton = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Feedback Modal */}
+      {showFeedbackModal && userInfo && (
+        <FeedbackModal
+          isOpen={showFeedbackModal}
+          onClose={handleFeedbackSkip}
+          meetingId={call.id}
+          mentorId={getMentorMenteeIds().mentorId}
+          menteeId={getMentorMenteeIds().menteeId}
+          userName={userInfo.userName}
+          userEmail={userInfo.userEmail}
+        />
+      )}
     </>
   );
 };

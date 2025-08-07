@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import MeetingTypeList from '@/components/MeetingTypeList';
 import PendingBookingCards from '@/components/PendingBookingCards';
 import UpcomingBookings from '@/components/UpcomingBookings';
+import PendingFeedbackHandler from '@/components/PendingFeedbackHandler';
 import { Clock, Calendar, TrendingUp, Users, Bell, Video, Lightbulb, Monitor, MicOff } from 'lucide-react';
 import { useGetCalls } from '@/hooks/useGetCalls';
 import { useAuth } from '@/providers/AuthProvider';
@@ -53,13 +54,18 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-dark-2">
+      <PendingFeedbackHandler />
       <div className="container mx-auto px-6 py-8 max-w-7xl">
         {/* Welcome Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back{user ? `, ${user.firstName}` : ''}! ROLE : {user ? user.role : 'null'}
-          </h1>
-          <p className="text-sky-2">Ready to connect with your team?</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">
+                Welcome back{user ? `, ${user.firstName}` : ''}! ROLE : {user ? user.role : 'null'}
+              </h1>
+              <p className="text-sky-2">Ready to connect with your team?</p>
+            </div>
+          </div>
         </div>
 
         {/* Stats Cards */}
