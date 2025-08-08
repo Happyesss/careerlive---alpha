@@ -7,17 +7,33 @@ import PendingFeedbackHandler from '@/components/PendingFeedbackHandler';
 import { Clock, Calendar, TrendingUp, Users, Bell, Video, Lightbulb, Monitor, MicOff } from 'lucide-react';
 import { useGetCalls } from '@/hooks/useGetCalls';
 import { useAuth } from '@/providers/AuthProvider';
+import ApprovePopup from '@/components/ApprovePopup';
 
 const Home = () => {
   const now = new Date();
   const { endedCalls, upcomingCalls, isLoading } = useGetCalls();
   const { user } = useAuth();
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [approveBooking, setApproveBooking] = useState(null);
+  const [fetchPendingRequests, setFetchPendingRequests] = useState(false)
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handleBookingClick = (booking: any) => {
-    setSelectedBooking(booking);
+    setApproveBooking(booking);
+    setIsPopupOpen(true);
     // This will be handled by MeetingTypeList to open the scheduling modal
   };
+
+  
+  const fetchPendingBookings = async () => {
+         setFetchPendingRequests(!fetchPendingRequests);
+  }
+
+  const onClose = () => {
+    setApproveBooking(null);
+    setIsPopupOpen(false);
+  };  
+
 
   const handleClearBooking = () => {
     setSelectedBooking(null);
@@ -148,7 +164,9 @@ const Home = () => {
                 <span className="text-sm">Click to schedule</span>
               </div>
             </div>
-            <PendingBookingCards onBookingClick={handleBookingClick} />
+            <PendingBookingCards fetchPendingRequests={fetchPendingRequests}  onBookingClick={handleBookingClick} />
+            {isPopupOpen && approveBooking ? 
+              <ApprovePopup data={approveBooking} fetchPendingBookings={fetchPendingBookings}  onClose={onClose}/> : null}
           </div>
         )}
 

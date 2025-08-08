@@ -22,9 +22,10 @@ interface Booking {
 
 interface PendingBookingCardsProps {
   onBookingClick: (booking: Booking) => void;
+  fetchPendingRequests: boolean;
 }
 
-const PendingBookingCards: React.FC<PendingBookingCardsProps> = ({ onBookingClick }) => {
+const PendingBookingCards: React.FC<PendingBookingCardsProps> = ({ onBookingClick,fetchPendingRequests }) => {
   const [pendingBookings, setPendingBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
@@ -33,7 +34,7 @@ const PendingBookingCards: React.FC<PendingBookingCardsProps> = ({ onBookingClic
     if (user?.role === 'mentor') {
       fetchPendingBookings();
     }
-  }, [user]);
+  }, [user,fetchPendingRequests]);
 
   const fetchPendingBookings = async () => {
     try {

@@ -293,14 +293,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                   <User className="h-5 w-5 text-blue-1" />
                   Choose Your Mentor
                 </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
+                <button
                   onClick={() => setStep(1)}
-                  className="text-sky-2 border-dark-3 hover:bg-dark-3"
+                  className="text-white bg-dark-3 py-2 px-5 text-sm rounded-sm hover:bg-dark-4"
                 >
                   Back
-                </Button>
+                </button>
               </div>
 
               <div className="bg-dark-3 p-4 rounded-lg">
@@ -341,14 +339,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                   <MessageSquare className="h-5 w-5 text-blue-1" />
                   Booking Details
                 </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
+                <button
                   onClick={() => setStep(2)}
-                  className="text-sky-2 border-dark-3 hover:bg-dark-3"
+                  className="text-white bg-dark-3 py-2 px-5 text-sm rounded-sm hover:bg-dark-4"
                 >
                   Back
-                </Button>
+                </button>
               </div>
 
               <div className="bg-dark-3 p-4 rounded-lg space-y-3">
