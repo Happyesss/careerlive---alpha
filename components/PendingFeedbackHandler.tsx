@@ -17,7 +17,7 @@ const PendingFeedbackHandler = () => {
   const [feedbackData, setFeedbackData] = useState<PendingFeedbackData | null>(null);
 
   useEffect(() => {
-    // Check for pending feedback on component mount
+    // Check for pending feedback on component mount with a slight delay to ensure page refresh is complete
     const checkPendingFeedback = () => {
       const pendingData = localStorage.getItem('pendingFeedback');
       if (pendingData) {
@@ -27,12 +27,18 @@ const PendingFeedbackHandler = () => {
           const isRecent = Date.now() - data.timestamp < 10 * 60 * 1000;
           
           if (isRecent) {
-            setFeedbackData(data);
-            setShowFeedback(true);
+            // Clear the pending feedback immediately to prevent duplicate shows
+            localStorage.removeItem('pendingFeedback');
+            
+            // Show feedback with a small delay to ensure smooth transition after refresh
+            setTimeout(() => {
+              setFeedbackData(data);
+              setShowFeedback(true);
+            }, 1000); // 1 second delay for better UX
+          } else {
+            // Clear old feedback data
+            localStorage.removeItem('pendingFeedback');
           }
-          
-          // Clear the pending feedback regardless of age
-          localStorage.removeItem('pendingFeedback');
         } catch (error) {
           localStorage.removeItem('pendingFeedback');
         }
@@ -41,9 +47,6 @@ const PendingFeedbackHandler = () => {
 
     // Check immediately when component mounts
     checkPendingFeedback();
-    
-    // Also check periodically in case user navigates back quickly
-    const interval = setInterval(checkPendingFeedback, 2000);
     
     // Check when the page becomes visible (e.g., user returns from meeting)
     const handleVisibilityChange = () => {
@@ -55,7 +58,6 @@ const PendingFeedbackHandler = () => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
     return () => {
-      clearInterval(interval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);

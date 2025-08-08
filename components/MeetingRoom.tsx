@@ -99,8 +99,8 @@ const MeetingRoom = () => {
   };
 
   return (
-    <section className="relative h-screen w-full overflow-hidden pt-2 md:pt-4 text-white">
-      <div className="relative flex size-full items-center justify-center">
+    <section className="relative h-screen w-full overflow-visible pt-2 md:pt-4 text-white">
+      <div className="relative flex size-full items-center justify-center overflow-visible">
         <div className="flex size-full max-w-[1000px] items-center px-2 md:px-0">
           <CallLayout />
         </div>
@@ -113,7 +113,7 @@ const MeetingRoom = () => {
         </div>
       </div>
       {/* video layout and call controls */}
-      <div className="fixed bottom-0 flex w-full items-center justify-center gap-1 sm:gap-2 md:gap-5 p-2 md:p-4 bg-gradient-to-t from-black/70 to-transparent overflow-x-auto meeting-controls">
+      <div className="fixed bottom-0 flex w-full items-center justify-center gap-1 sm:gap-2 md:gap-5 p-2 md:p-4 bg-gradient-to-t from-black/70 to-transparent overflow-visible meeting-controls">
         {/* Microphone Control */}
         <button
           onClick={toggleMicrophone}
@@ -203,13 +203,13 @@ const MeetingRoom = () => {
           </DropdownMenuContent>
         </DropdownMenu>
         
-        <div className="scale-50 sm:scale-75 md:scale-100 flex-shrink-0">
+        <div className="flex-shrink-0">
           <CallStatsButton />
         </div>
         
         <button
           onClick={isRecording ? stopRecording : startRecording}
-          className={`cursor-pointer rounded-lg px-1 py-2 sm:px-2 sm:py-2 md:px-4 md:py-2 transition-colors flex items-center gap-1 md:gap-2 shadow-lg text-xs md:text-sm flex-shrink-0 ${
+          className={`recording-button cursor-pointer rounded-lg px-1 py-2 sm:px-2 sm:py-2 md:px-4 md:py-2 transition-colors flex items-center gap-1 md:gap-2 shadow-lg text-xs md:text-sm flex-shrink-0 ${
             isRecording 
               ? 'bg-red-500 hover:bg-red-600 text-white' 
               : 'bg-gray-800 hover:bg-gray-700 text-white'

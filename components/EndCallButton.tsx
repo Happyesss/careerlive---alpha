@@ -71,10 +71,12 @@ const EndCallButton = () => {
       }
       
       await call.endCall();
-      router.push('/');
+      // Force a page refresh when redirecting to home
+      window.location.href = '/';
     } catch (error) {
       console.error('Error ending call:', error);
-      router.push('/');
+      // Force a page refresh even on error
+      window.location.href = '/';
     }
   };
   
@@ -96,16 +98,18 @@ const EndCallButton = () => {
       }
       
       await call.leave();
-      router.push('/');
+      // Force a page refresh when redirecting to home
+      window.location.href = '/';
     } catch (error) {
       console.error('Error leaving call:', error);
-      router.push('/');
+      // Force a page refresh even on error
+      window.location.href = '/';
     }
   };
 
   // Get mentor and mentee IDs for feedback
   const getMentorMenteeIds = () => {
-    const mentor = participants.find(p => p.userId !== localParticipant?.userId);
+    const mentor = participants.find((p: any) => p.userId !== localParticipant?.userId);
     const mentorId = mentor?.userId || '';
     const menteeId = localParticipant?.userId || '';
     
