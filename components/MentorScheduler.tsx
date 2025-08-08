@@ -66,14 +66,16 @@ const MentorScheduler: React.FC<MentorSchedulerProps> = ({ onClose, selectedBook
   }, []);
 
   useEffect(() => {
-    if (searchTerm) {
-      const filtered = mentees.filter(mentee => 
-        `${mentee.firstName} ${mentee.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        mentee.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    if (searchTerm.trim()) {
+      const filtered = mentees
+        .filter(mentee => 
+          `${mentee.firstName} ${mentee.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          mentee.email.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .slice(0, 5); // Limit to top 5 results
       setFilteredMentees(filtered);
     } else {
-      setFilteredMentees(mentees);
+      setFilteredMentees([]);
     }
   }, [searchTerm, mentees]);
 
@@ -399,33 +401,60 @@ const MentorScheduler: React.FC<MentorSchedulerProps> = ({ onClose, selectedBook
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-2" />
                   <Input
-                    placeholder="Search mentees by name or email..."
+                    placeholder="Type to search mentees by name or email..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-dark-3 border-dark-4 text-white"
+                    className="pl-10 bg-dark-3 border-dark-4 text-white placeholder:text-sky-2"
                   />
                 </div>
                 
                 {searchTerm && (
-                  <div className="max-h-40 overflow-y-auto space-y-1">
-                    {filteredMentees.map((mentee) => (
-                      <div
-                        key={mentee._id}
-                        className="flex items-center gap-3 p-2 bg-dark-3 rounded cursor-pointer hover:bg-dark-4"
-                        onClick={() => handleMenteeSelect(mentee)}
-                      >
-                        <div className="w-6 h-6 bg-blue-1 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                          {mentee.firstName[0]}{mentee.lastName[0]}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-white">{mentee.firstName} {mentee.lastName}</p>
-                          <p className="text-xs text-sky-2">{mentee.email}</p>
-                        </div>
+                  <div className="bg-dark-3 border border-dark-4 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                    {filteredMentees.length > 0 ? (
+                      <div className="space-y-0">
+                        {filteredMentees.map((mentee, index) => (
+                          <div
+                            key={mentee._id}
+                            className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-dark-2 transition-colors ${
+                              index !== filteredMentees.length - 1 ? 'border-b border-dark-4' : ''
+                            }`}
+                            onClick={() => handleMenteeSelect(mentee)}
+                          >
+                            <div className="w-8 h-8 bg-gradient-to-br from-blue-1 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-md">
+                              {mentee.firstName[0]}{mentee.lastName[0]}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-white truncate">
+                                {mentee.firstName} {mentee.lastName}
+                              </p>
+                              <p className="text-xs text-sky-2 truncate">{mentee.email}</p>
+                            </div>
+                            <div className="text-xs text-sky-2">
+                              Select
+                            </div>
+                          </div>
+                        ))}
+                        {mentees.length > 5 && (
+                          <div className="p-3 text-xs text-sky-2 text-center border-t border-dark-4">
+                            Showing top 5 results. Refine your search for more specific matches.
+                          </div>
+                        )}
                       </div>
-                    ))}
-                    {filteredMentees.length === 0 && (
-                      <p className="text-sm text-sky-2 p-2">No mentees found</p>
+                    ) : (
+                      <div className="p-4 text-center">
+                        <Users className="h-8 w-8 text-sky-2 mx-auto mb-2" />
+                        <p className="text-sm text-sky-2">No mentees found matching "{searchTerm}"</p>
+                        <p className="text-xs text-sky-2 mt-1">Try a different search term</p>
+                      </div>
                     )}
+                  </div>
+                )}
+                
+                {!searchTerm && (
+                  <div className="text-center py-6 text-sky-2">
+                    <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">Start typing to search for mentees</p>
+                    <p className="text-xs mt-1">Search by name or email address</p>
                   </div>
                 )}
               </div>

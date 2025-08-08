@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/providers/AuthProvider';
-import { Calendar, Clock, User, MapPin, MessageSquare, CalendarDays } from 'lucide-react';
+import { Calendar, Clock, User, MapPin, MessageSquare, CalendarDays, Search, Users } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -30,6 +30,8 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
   const [selectedTime, setSelectedTime] = useState('');
   const [duration, setDuration] = useState(60);
   const [availableMentors, setAvailableMentors] = useState<Mentor[]>([]);
+  const [filteredMentors, setFilteredMentors] = useState<Mentor[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -46,11 +48,28 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
       setSelectedTime('');
       setDuration(60);
       setAvailableMentors([]);
+      setFilteredMentors([]);
+      setSearchTerm('');
       setSelectedMentor(null);
       setDescription('');
       setStep(1);
     }
   }, [isOpen]);
+
+  // Filter mentors based on search term
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      const filtered = availableMentors
+        .filter(mentor => 
+          mentor.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          mentor.email.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .slice(0, 5); // Limit to top 5 results
+      setFilteredMentors(filtered);
+    } else {
+      setFilteredMentors(availableMentors);
+    }
+  }, [searchTerm, availableMentors]);
 
   const handleDateTimeSelect = async () => {
     if (!selectedDate || !selectedTime) {
@@ -82,6 +101,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
 
       const data = await response.json();
       setAvailableMentors(data.availableMentors);
+      setFilteredMentors(data.availableMentors);
       
       if (data.availableMentors.length === 0) {
         toast({ 
@@ -310,24 +330,72 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
+              {/* Search Input */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-2" />
+                <Input
+                  placeholder="Search mentors by name or email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-dark-3 border-dark-4 text-white placeholder:text-sky-2"
+                />
+              </div>
+
+              {/* Search Results Info */}
+              {searchTerm && (
+                <div className="text-sm text-sky-2 flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  <span>
+                    {filteredMentors.length === 0 
+                      ? `No mentors found matching "${searchTerm}"`
+                      : `Showing ${Math.min(filteredMentors.length, 5)} of ${filteredMentors.length} results${filteredMentors.length > 5 ? ' (top 5)' : ''}`
+                    }
+                  </span>
+                </div>
+              )}
+
               <div className="space-y-3 max-h-64 overflow-y-auto">
-                {availableMentors.map((mentor) => (
-                  <div
-                    key={mentor._id}
-                    onClick={() => handleMentorSelect(mentor)}
-                    className="p-4 bg-dark-2 border border-dark-3 rounded-lg cursor-pointer hover:border-blue-1 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-blue-1 rounded-full flex items-center justify-center text-white font-semibold">
-                        {mentor.firstName[0]}{mentor.lastName[0]}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-white">{mentor.fullName}</h4>
-                        <p className="text-sm text-sky-2">{mentor.email}</p>
+                {filteredMentors.length > 0 ? (
+                  filteredMentors.map((mentor) => (
+                    <div
+                      key={mentor._id}
+                      onClick={() => handleMentorSelect(mentor)}
+                      className="p-4 bg-dark-2 border border-dark-3 rounded-lg cursor-pointer hover:border-blue-1 transition-all duration-200 hover:bg-dark-1 group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-1 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md group-hover:shadow-lg transition-shadow">
+                          {mentor.firstName[0]}{mentor.lastName[0]}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-white truncate">{mentor.fullName}</h4>
+                          <p className="text-sm text-sky-2 truncate">{mentor.email}</p>
+                        </div>
+                        <div className="text-xs text-sky-2 font-medium">
+                          Select
+                        </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="p-8 text-center">
+                    <Users className="h-12 w-12 text-sky-2 mx-auto mb-3" />
+                    <p className="text-sky-2 mb-2">
+                      {searchTerm ? `No mentors found matching "${searchTerm}"` : 'No mentors available'}
+                    </p>
+                    {searchTerm && (
+                      <p className="text-xs text-sky-2">
+                        Try adjusting your search terms or clear the search to see all mentors
+                      </p>
+                    )}
                   </div>
-                ))}
+                )}
+                
+                {filteredMentors.length >= 5 && availableMentors.length > 5 && (
+                  <div className="p-3 text-xs text-sky-2 text-center border-t border-dark-4 bg-dark-3 rounded-lg">
+                    <Users className="h-4 w-4 inline mr-2" />
+                    Showing top 5 results. Use search to find specific mentors.
+                  </div>
+                )}
               </div>
             </div>
           )}
