@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useCall, useCallStateHooks } from '@stream-io/video-react-sdk';
 import { useRouter } from 'next/navigation';
 import { X, LogOut, PhoneOff } from 'lucide-react';
+import { useAuth } from '@/providers/AuthProvider';
 import { Button } from './ui/button';
 import { 
   Dialog, 
@@ -13,11 +14,14 @@ import {
   DialogDescription,
   DialogFooter
 } from './ui/dialog';
+import FeedbackModal from './FeedbackModal';
 
 const EndCallButton = () => {
   const call = useCall();
   const router = useRouter();
+  const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [userInfo, setUserInfo] = useState<{
     userId: string;
     userName: string;
@@ -57,26 +61,17 @@ const EndCallButton = () => {
     setIsDialogOpen(false);
     
     try {
-      // Store feedback info for home page
-      if (userInfo) {
-        const feedbackData = {
-          meetingId: call.id,
-          mentorId: getMentorMenteeIds().mentorId,
-          menteeId: getMentorMenteeIds().menteeId,
-          userName: userInfo.userName,
-          userEmail: userInfo.userEmail,
-          timestamp: Date.now()
-        };
-        localStorage.setItem('pendingFeedback', JSON.stringify(feedbackData));
-      }
-      
       await call.endCall();
-      // Force a page refresh when redirecting to home
-      window.location.href = '/';
+      
+      // Show feedback modal before redirecting - only for mentees
+      if (userInfo && user?.role === 'mentee') {
+        setShowFeedbackModal(true);
+      } else {
+        router.push('/');
+      }
     } catch (error) {
       console.error('Error ending call:', error);
-      // Force a page refresh even on error
-      window.location.href = '/';
+      router.push('/');
     }
   };
   
@@ -84,26 +79,17 @@ const EndCallButton = () => {
     setIsDialogOpen(false);
     
     try {
-      // Store feedback info for home page
-      if (userInfo) {
-        const feedbackData = {
-          meetingId: call.id,
-          mentorId: getMentorMenteeIds().mentorId,
-          menteeId: getMentorMenteeIds().menteeId,
-          userName: userInfo.userName,
-          userEmail: userInfo.userEmail,
-          timestamp: Date.now()
-        };
-        localStorage.setItem('pendingFeedback', JSON.stringify(feedbackData));
-      }
-      
       await call.leave();
-      // Force a page refresh when redirecting to home
-      window.location.href = '/';
+      
+      // Show feedback modal before redirecting - only for mentees
+      if (userInfo && user?.role === 'mentee') {
+        setShowFeedbackModal(true);
+      } else {
+        router.push('/');
+      }
     } catch (error) {
       console.error('Error leaving call:', error);
-      // Force a page refresh even on error
-      window.location.href = '/';
+      router.push('/');
     }
   };
 
@@ -114,6 +100,16 @@ const EndCallButton = () => {
     const menteeId = localParticipant?.userId || '';
     
     return { mentorId, menteeId };
+  };
+
+  const handleFeedbackComplete = () => {
+    setShowFeedbackModal(false);
+    router.push('/');
+  };
+
+  const handleFeedbackSkip = () => {
+    setShowFeedbackModal(false);
+    router.push('/');
   };
 
   return (
@@ -181,6 +177,20 @@ const EndCallButton = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Feedback Modal */}
+      {showFeedbackModal && userInfo && (
+        <FeedbackModal
+          isOpen={showFeedbackModal}
+          onClose={handleFeedbackSkip}
+          onComplete={handleFeedbackComplete}
+          meetingId={call.id}
+          mentorId={getMentorMenteeIds().mentorId}
+          menteeId={getMentorMenteeIds().menteeId}
+          userName={userInfo.userName}
+          userEmail={userInfo.userEmail}
+        />
+      )}
     </>
   );
 };
