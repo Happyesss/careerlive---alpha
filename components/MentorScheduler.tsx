@@ -84,6 +84,8 @@ const MentorScheduler: React.FC<MentorSchedulerProps> = ({ onClose, selectedBook
     }
   }, [propSelectedBooking, mentees]);
 
+  console.log(propSelectedBooking)
+
   const fetchPendingBookings = async () => {
     try {
       const response = await fetch('/api/bookings', {
@@ -449,7 +451,7 @@ const MentorScheduler: React.FC<MentorSchedulerProps> = ({ onClose, selectedBook
                 type="time"
                 value={formData.time}
                 onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
-                className="bg-dark-3 border-dark-4 text-white"
+                className="bg-dark-3 text-white border-dark-4"
               />
             </div>
             
