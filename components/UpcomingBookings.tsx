@@ -131,8 +131,8 @@ const UpcomingBookings = () => {
               key={booking._id} 
               className="bg-dark-2 border-dark-3 p-4 hover:border-blue-1 transition-colors"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="flex sm:items-center items-start flex-col gap-6 sm:gap-0 sm:flex-row justify-between">
+                <div className="flex items-center  gap-3">
                   <div className="w-10 h-10 bg-blue-1 rounded-full flex items-center justify-center text-white font-semibold">
                     {otherPerson.firstName[0]}{otherPerson.lastName[0]}
                   </div>

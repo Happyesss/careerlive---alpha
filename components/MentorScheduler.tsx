@@ -378,7 +378,7 @@ const MentorScheduler: React.FC<MentorSchedulerProps> = ({ onClose, selectedBook
             </label>
             
             {selectedMentee ? (
-              <div className="flex items-center justify-between bg-dark-3 p-3 rounded-lg">
+              <div className="flex items-center justify-between flex-col gap-5 sm:gap-0 sm:flex-row bg-dark-3 p-3 rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-blue-1 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                     {selectedMentee.firstName[0]}{selectedMentee.lastName[0]}
