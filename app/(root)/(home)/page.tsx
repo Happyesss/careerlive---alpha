@@ -187,7 +187,7 @@ const Home = () => {
             ) : (
               <div className="space-y-3">
                 {/* Recent ended calls */}
-                {endedCalls?.slice(0, 4).map((call, index) => {
+                {endedCalls?.length == 0 ? (<div className='lg:h-[25vh] w-full  flex items-center justify-center'><p className='text-white'>No recent calls found</p></div>) : ( endedCalls?.slice(0, 4).map((call, index) => {
                   const meetingDate = call.state.startsAt ? new Date(call.state.startsAt) : new Date();
                   const timeStr = meetingDate.toLocaleTimeString('en-US', { 
                     hour: '2-digit', 
@@ -212,7 +212,8 @@ const Home = () => {
                       </span>
                     </div>
                   );
-                })}
+                }))}
+               
                 
                 {/* Show fewer upcoming calls to make room for more ended calls */}
                 {upcomingCalls?.slice(0, 0).map((call, index) => {
