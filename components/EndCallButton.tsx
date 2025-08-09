@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useCall, useCallStateHooks } from '@stream-io/video-react-sdk';
 import { useRouter } from 'next/navigation';
 import { X, LogOut, PhoneOff } from 'lucide-react';
@@ -14,19 +14,12 @@ import {
   DialogDescription,
   DialogFooter
 } from './ui/dialog';
-import FeedbackModal from './FeedbackModal';
 
 const EndCallButton = () => {
   const call = useCall();
   const router = useRouter();
   const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [userInfo, setUserInfo] = useState<{
-    userId: string;
-    userName: string;
-    userEmail: string;
-  } | null>(null);
 
   if (!call)
     throw new Error(
@@ -43,35 +36,47 @@ const EndCallButton = () => {
     call.state.createdBy &&
     localParticipant.userId === call.state.createdBy.id;
 
-  // Get user info from localStorage or participant data
-  useEffect(() => {
-    if (localParticipant) {
-      const storedUser = localStorage.getItem('user');
-      const userData = storedUser ? JSON.parse(storedUser) : null;
-      
-      setUserInfo({
-        userId: localParticipant.userId,
-        userName: localParticipant.name || userData?.name || 'Unknown User',
-        userEmail: userData?.email || 'unknown@example.com',
-      });
+  // Prepare and store pending feedback for mentees, then hard-redirect home
+  const queueFeedbackAndRedirectHome = () => {
+    try {
+      if (user?.role === 'mentee') {
+        const other = participants.find((p: any) => p.userId !== localParticipant?.userId);
+        const mentorId = other?.userId || '';
+        const menteeId = localParticipant?.userId || '';
+        const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'Unknown User';
+        const userEmail = user?.email || 'unknown@example.com';
+
+        const pendingData = {
+          meetingId: call.id,
+          mentorId,
+          menteeId,
+          userName,
+          userEmail,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem('pendingFeedback', JSON.stringify(pendingData));
+      }
+    } catch (e) {
+      // no-op
+    } finally {
+      // Force full refresh to home
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      } else {
+        router.push('/');
+      }
     }
-  }, [localParticipant]);
+  };
 
   const endCallForEveryone = async () => {
     setIsDialogOpen(false);
     
     try {
       await call.endCall();
-      
-      // Show feedback modal before redirecting - only for mentees
-      if (userInfo && user?.role === 'mentee') {
-        setShowFeedbackModal(true);
-      } else {
-        router.push('/');
-      }
+      queueFeedbackAndRedirectHome();
     } catch (error) {
       console.error('Error ending call:', error);
-      router.push('/');
+      queueFeedbackAndRedirectHome();
     }
   };
   
@@ -80,16 +85,10 @@ const EndCallButton = () => {
     
     try {
       await call.leave();
-      
-      // Show feedback modal before redirecting - only for mentees
-      if (userInfo && user?.role === 'mentee') {
-        setShowFeedbackModal(true);
-      } else {
-        router.push('/');
-      }
+      queueFeedbackAndRedirectHome();
     } catch (error) {
       console.error('Error leaving call:', error);
-      router.push('/');
+      queueFeedbackAndRedirectHome();
     }
   };
 
@@ -100,16 +99,6 @@ const EndCallButton = () => {
     const menteeId = localParticipant?.userId || '';
     
     return { mentorId, menteeId };
-  };
-
-  const handleFeedbackComplete = () => {
-    setShowFeedbackModal(false);
-    router.push('/');
-  };
-
-  const handleFeedbackSkip = () => {
-    setShowFeedbackModal(false);
-    router.push('/');
   };
 
   return (
@@ -178,19 +167,7 @@ const EndCallButton = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Feedback Modal */}
-      {showFeedbackModal && userInfo && (
-        <FeedbackModal
-          isOpen={showFeedbackModal}
-          onClose={handleFeedbackSkip}
-          onComplete={handleFeedbackComplete}
-          meetingId={call.id}
-          mentorId={getMentorMenteeIds().mentorId}
-          menteeId={getMentorMenteeIds().menteeId}
-          userName={userInfo.userName}
-          userEmail={userInfo.userEmail}
-        />
-      )}
+  {/** Feedback is now handled on Home via PendingFeedbackHandler for mentees only */}
     </>
   );
 };

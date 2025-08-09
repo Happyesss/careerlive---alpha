@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CallParticipantsList,
   CallStatsButton,
@@ -14,6 +14,7 @@ import { Users, LayoutList, Video, Square, Mic, MicOff, Camera, CameraOff, Monit
 import { useLocalRecording } from '@/hooks/useLocalRecording';
 import RecordingDownloadModal from './RecordingDownloadModal';
 import InCallChatPanel from './InCallChatPanel';
+import { useAuth } from '@/providers/AuthProvider';
 
 import {
   DropdownMenu,
@@ -45,8 +46,12 @@ const MeetingRoom = () => {
       setChatUnreadCount(0);
     }
   };
-  const { useCallCallingState } = useCallStateHooks();
+  const { useCallCallingState, useLocalParticipant, useParticipants, useCallEndedAt } = useCallStateHooks();
   const call = useCall();
+  const localParticipant = useLocalParticipant();
+  const participants = useParticipants();
+  const callEndedAt = useCallEndedAt();
+  const { user } = useAuth();
   
   const {
     isRecording,
@@ -95,6 +100,48 @@ const MeetingRoom = () => {
     }
     setIsScreenSharing(!isScreenSharing);
   };
+
+  // When call ends (host ends), redirect home and queue feedback for mentees
+  useEffect(() => {
+    if (!call) return;
+    if (callEndedAt) {
+      try {
+        if (user?.role === 'mentee') {
+          const other = participants.find((p: any) => p.userId !== localParticipant?.userId);
+          const mentorId = other?.userId || '';
+          const menteeId = localParticipant?.userId || '';
+
+          // We cannot import useAuth here due to circular hook usage in SSR; fall back to localStorage too
+          let userName = 'Unknown User';
+          let userEmail = 'unknown@example.com';
+          try {
+            const stored = localStorage.getItem('user');
+            if (stored) {
+              const parsed = JSON.parse(stored);
+              userName = `${parsed.firstName ?? ''} ${parsed.lastName ?? ''}`.trim() || parsed.name || userName;
+              userEmail = parsed.email || userEmail;
+            }
+          } catch {}
+
+          const pendingData = {
+            meetingId: call.id,
+            mentorId,
+            menteeId,
+            userName,
+            userEmail,
+            timestamp: Date.now(),
+          };
+          localStorage.setItem('pendingFeedback', JSON.stringify(pendingData));
+        }
+      } finally {
+        if (typeof window !== 'undefined') {
+          window.location.href = '/';
+        } else {
+          router.push('/');
+        }
+      }
+    }
+  }, [callEndedAt]);
 
   if (callingState !== CallingState.JOINED) return <Loader />;
 
