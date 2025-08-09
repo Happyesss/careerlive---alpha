@@ -3,8 +3,8 @@
 .str-video__chat-panel,
 .str-video__chat-toggle,
 [data-testid="chat-button"],
-[class*="chat-button"],
-[class*="ChatButton"] {
+.str-video__call-controls [class*="chat-button"],
+.str-video__call-controls [class*="ChatButton"] {
   display: none !important;
 }
 
@@ -16,4 +16,12 @@
 /* Ensure our custom chat panel has proper z-index */
 .custom-chat-panel {
   z-index: 9999 !important;
+}
+
+/* Ensure our custom chat elements are always visible */
+.custom-chat-button,
+.custom-chat-panel {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }

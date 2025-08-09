@@ -10,7 +10,7 @@ import {
   useCall,
 } from '@stream-io/video-react-sdk';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Users, LayoutList, Video, Square, Mic, MicOff, Camera, CameraOff, Monitor, MonitorOff } from 'lucide-react';
+import { Users, LayoutList, Video, Square, Mic, MicOff, Camera, CameraOff, Monitor, MonitorOff, MessageSquare } from 'lucide-react';
 import { useLocalRecording } from '@/hooks/useLocalRecording';
 import RecordingDownloadModal from './RecordingDownloadModal';
 import InCallChatPanel from './InCallChatPanel';
@@ -34,6 +34,17 @@ const MeetingRoom = () => {
   const router = useRouter();
   const [layout, setLayout] = useState<CallLayoutType>('speaker-left');
   const [showParticipants, setShowParticipants] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [chatUnreadCount, setChatUnreadCount] = useState(0);
+
+  // Clear unread count when chat is opened
+  const handleChatToggle = () => {
+    const newShowChat = !showChat;
+    setShowChat(newShowChat);
+    if (newShowChat) {
+      setChatUnreadCount(0);
+    }
+  };
   const { useCallCallingState } = useCallStateHooks();
   const call = useCall();
   
@@ -229,6 +240,23 @@ const MeetingRoom = () => {
         </button>
         
         <button 
+          onClick={handleChatToggle}
+          className={`cursor-pointer rounded-lg transition-colors px-1 py-2 sm:px-2 sm:py-2 md:px-4 md:py-2 flex items-center gap-1 md:gap-2 shadow-lg text-xs md:text-sm flex-shrink-0 relative ${
+            showChat 
+              ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+              : 'bg-gray-800 hover:bg-gray-700 text-white'
+          }`}
+        >
+          <MessageSquare size={12} className="sm:w-[14px] sm:h-[14px] md:w-[18px] md:h-[18px] text-white" />
+          <span className="hidden sm:inline">Chat</span>
+          {chatUnreadCount > 0 && !showChat && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center min-w-[16px] text-[10px]">
+              {chatUnreadCount > 9 ? '9+' : chatUnreadCount}
+            </span>
+          )}
+        </button>
+        
+        <button 
           onClick={() => setShowParticipants((prev) => !prev)}
           className="cursor-pointer rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors px-1 py-2 sm:px-2 sm:py-2 md:px-4 md:py-2 flex items-center gap-1 md:gap-2 shadow-lg text-xs md:text-sm flex-shrink-0"
         >
@@ -248,7 +276,11 @@ const MeetingRoom = () => {
       />
 
       {/* In-Call Chat Panel */}
-      <InCallChatPanel />
+      <InCallChatPanel 
+        isExpanded={showChat} 
+        onToggle={handleChatToggle}
+        onUnreadCountChange={setChatUnreadCount}
+      />
     </section>
   );
 };

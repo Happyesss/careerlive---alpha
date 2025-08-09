@@ -26,10 +26,12 @@ interface ChatMessage {
 }
 
 interface InCallChatPanelProps {
-  // No props needed - chat is always visible
+  isExpanded?: boolean;
+  onToggle?: () => void;
+  onUnreadCountChange?: (count: number) => void;
 }
 
-const InCallChatPanel = ({}: InCallChatPanelProps = {}) => {
+const InCallChatPanel = ({ isExpanded: externalIsExpanded, onToggle, onUnreadCountChange }: InCallChatPanelProps = {}) => {
   const call = useCall();
   const { useParticipants, useLocalParticipant } = useCallStateHooks();
   const participants = useParticipants();
@@ -37,9 +39,12 @@ const InCallChatPanel = ({}: InCallChatPanelProps = {}) => {
   
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [isExpanded, setIsExpanded] = useState(false); // Don't open automatically
+  const [internalIsExpanded, setInternalIsExpanded] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  
+  // Use external state if provided, otherwise use internal state
+  const isExpanded = externalIsExpanded !== undefined ? externalIsExpanded : internalIsExpanded;
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -204,6 +209,13 @@ const InCallChatPanel = ({}: InCallChatPanelProps = {}) => {
     }
   }, [isExpanded]);
 
+  // Notify parent of unread count changes
+  useEffect(() => {
+    if (onUnreadCountChange) {
+      onUnreadCountChange(unreadCount);
+    }
+  }, [unreadCount, onUnreadCountChange]);
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim()) {
@@ -216,7 +228,11 @@ const InCallChatPanel = ({}: InCallChatPanelProps = {}) => {
   };
 
   const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
+    if (onToggle) {
+      onToggle();
+    } else {
+      setInternalIsExpanded(!internalIsExpanded);
+    }
     if (!isExpanded) {
       setUnreadCount(0);
     }
@@ -229,26 +245,16 @@ const InCallChatPanel = ({}: InCallChatPanelProps = {}) => {
 
   if (!call) return null; // Don't show anything if no call
 
+  // Debug log to check if component is rendering
+  console.log('InCallChatPanel render:', { 
+    hasCall: !!call, 
+    isExpanded, 
+    participantCount: participants.length,
+    messagesCount: messages.length 
+  });
+
   return (
     <>
-      {/* Chat Toggle Button - Only show when collapsed */}
-      {!isExpanded && (
-        <div className="fixed bottom-4 right-4 z-50">
-          <Button
-            onClick={toggleExpanded}
-            className="relative bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg opacity-100 visible"
-            style={{ opacity: 1, visibility: 'visible' }}
-          >
-            <MessageSquare className="h-5 w-5 text-white" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </Button>
-        </div>
-      )}
-
       {/* Chat Panel - Only show when expanded */}
       {isExpanded && (
         <div className="custom-chat-panel fixed bottom-4 right-4 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-80 flex flex-col">

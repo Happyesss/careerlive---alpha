@@ -326,3 +326,20 @@ html .str-video__call-stats,
     position: relative !important;
   }
 }
+
+/* Custom Chat Button Styles - Ensure it's always visible */
+.custom-chat-button {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+}
+
+/* Ensure custom chat panel is visible */
+.custom-chat-panel {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 9999 !important;
+}
