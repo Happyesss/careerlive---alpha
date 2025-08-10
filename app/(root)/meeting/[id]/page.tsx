@@ -76,6 +76,24 @@ const MeetingPage = () => {
     }
   }, [isCallLoading, call, createdCall, isCreatingCall, client, user, id]);
 
+  // Track that mentees joined this meeting via link for history display
+  useEffect(() => {
+    try {
+      if (typeof window === 'undefined') return;
+      if (!user?.id || user.role !== 'mentee') return;
+      const meetingId = (id as string) || currentCall?.id;
+      if (!meetingId) return;
+
+      const key = `joinedViaLink:${user.id}`;
+      const existing: string[] = JSON.parse(window.localStorage.getItem(key) || '[]');
+      if (!existing.includes(meetingId)) {
+        window.localStorage.setItem(key, JSON.stringify([...existing, meetingId]));
+      }
+    } catch (_) {
+      // ignore
+    }
+  }, [user?.id, user?.role, id, isCallLoading]);
+
   if (loading || isCallLoading || isCreatingCall) return <Loader />;
 
   const currentCall = call || createdCall;

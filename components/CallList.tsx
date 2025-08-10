@@ -96,6 +96,9 @@ const CallList = ({ type, sortBy }: { type: 'ended' | 'upcoming' | 'recordings',
           const call = meeting as Call;
           const now = new Date();
           let isOngoing = false;
+          let viaLink = false;
+          // Detect instant meeting: description is 'Instant Meeting' or missing
+          const isInstantMeeting = (call?.state?.custom?.description || '').trim().toLowerCase() === 'instant meeting' || !call?.state?.custom?.description;
           
           // Only check for ongoing status in upcoming meetings
           if (type === 'upcoming' && call.state?.startsAt) {
@@ -110,6 +113,17 @@ const CallList = ({ type, sortBy }: { type: 'ended' | 'upcoming' | 'recordings',
           // For ended meetings, they are completed (not ongoing)
           if (type === 'ended') {
             isOngoing = false; // Ended meetings are never ongoing
+          }
+
+          // Determine if the current user joined this call via a link
+          try {
+            if (typeof window !== 'undefined' && user?.role === 'mentee' && call?.id) {
+              const key = `joinedViaLink:${user.id}`;
+              const existing: string[] = JSON.parse(window.localStorage.getItem(key) || '[]');
+              viaLink = existing.includes(call.id);
+            }
+          } catch (_) {
+            // ignore
           }
           
           return (
@@ -141,8 +155,9 @@ const CallList = ({ type, sortBy }: { type: 'ended' | 'upcoming' | 'recordings',
               }
               buttonIcon1={type === 'recordings' ? '/icons/play.svg' : undefined}
               buttonText={type === 'recordings' ? 'Play' : (type === 'ended' && !isOngoing ? undefined : 'Start')}
-              joinedViaLink={false}
+              joinedViaLink={viaLink}
               call={type !== 'recordings' ? (meeting as Call) : undefined}
+              hideParticipants={isInstantMeeting && type === 'ended'}
               handleClick={
                 type === 'recordings'
                   ? () => router.push(`${(meeting as CallRecording).url}`)

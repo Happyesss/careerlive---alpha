@@ -20,6 +20,7 @@ interface MeetingCardProps {
   isOngoing?: boolean;
   joinedViaLink?: boolean;
   call?: Call; // Add call prop to access actual members
+  hideParticipants?: boolean;
 }
 
 const MeetingCard = ({
@@ -34,6 +35,7 @@ const MeetingCard = ({
   isOngoing,
   joinedViaLink,
   call,
+  hideParticipants,
 }: MeetingCardProps) => {
   const { toast } = useToast();
 
@@ -187,29 +189,31 @@ const getDateLabel = (someDate: Date) => {
       </div>
 
       {/* Participants */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex -space-x-2">
-          {callMembers.slice(0, 4).map((member, index) => (
-            <img
-              key={member.id || index}
-              src={member.image}
-              alt={member.name}
-              width={28}
-              height={28}
-              className="rounded-full border-2 border-dark-1"
-            />
-          ))}
-          {callMembers.length > 4 && (
-            <div className="w-7 h-7 rounded-full bg-dark-3 border-2 border-dark-1 flex items-center justify-center">
-              <span className="text-xs text-sky-2">+{callMembers.length - 4}</span>
-            </div>
-          )}
+      {!hideParticipants && (
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex -space-x-2">
+            {callMembers.slice(0, 4).map((member, index) => (
+              <img
+                key={member.id || index}
+                src={member.image}
+                alt={member.name}
+                width={28}
+                height={28}
+                className="rounded-full border-2 border-dark-1"
+              />
+            ))}
+            {callMembers.length > 4 && (
+              <div className="w-7 h-7 rounded-full bg-dark-3 border-2 border-dark-1 flex items-center justify-center">
+                <span className="text-xs text-sky-2">+{callMembers.length - 4}</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-1 text-sky-2 text-sm">
+            <Users className="w-3 h-3" />
+            <span>{memberCount} participant{memberCount !== 1 ? 's' : ''}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-sky-2 text-sm">
-          <Users className="w-3 h-3" />
-          <span>{memberCount} participant{memberCount !== 1 ? 's' : ''}</span>
-        </div>
-      </div>
+      )}
 
       {/* Actions */}
       <div className="flex items-center justify-between">
