@@ -15,6 +15,7 @@ import { useLocalRecording } from '@/hooks/useLocalRecording';
 import RecordingDownloadModal from './RecordingDownloadModal';
 import InCallChatPanel from './InCallChatPanel';
 import { useAuth } from '@/providers/AuthProvider';
+import { useAudioMixRecording } from '@/hooks/useMixedAudioRecording';
 
 import {
   DropdownMenu,
@@ -37,6 +38,18 @@ const MeetingRoom = () => {
   const [showParticipants, setShowParticipants] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [chatUnreadCount, setChatUnreadCount] = useState(0);
+  const [currentUrl, setCurrentUrl] = useState('');
+
+
+    useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
+
+
+  const {
+  isAudioMixRecording
+} = useAudioMixRecording(currentUrl );
+
 
   // Clear unread count when chat is opened
   const handleChatToggle = () => {
@@ -285,6 +298,17 @@ const MeetingRoom = () => {
             </>
           )}
         </button>
+
+         {/* Audio Mix Recording Status Indicator */}
+           {isAudioMixRecording && (
+             <div className="flex items-center gap-2 cursor-default select-none rounded-lg bg-green-600 px-3 py-2 shadow-lg text-white text-xs md:text-sm flex-shrink-0">
+               <span className="w-3 h-3 rounded-full bg-green-400 animate-pulse"></span>
+               <span>Recording audio</span>
+             </div>
+           )}
+
+
+
         
         <button 
           onClick={handleChatToggle}

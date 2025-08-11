@@ -21,6 +21,7 @@ interface MeetingCardProps {
   joinedViaLink?: boolean;
   call?: Call; // Add call prop to access actual members
   hideParticipants?: boolean;
+  callId?: string; // Optional prop for call ID
 }
 
 const MeetingCard = ({
@@ -36,13 +37,14 @@ const MeetingCard = ({
   joinedViaLink,
   call,
   hideParticipants,
+  callId
 }: MeetingCardProps) => {
   const { toast } = useToast();
 
   // Get actual call members instead of static avatars
   const getCallMembers = () => {
     if (!call?.state?.members) return [];
-    
+
     return call.state.members.map((member, index) => {
       const name = member.user.name || member.user.id || `User ${index + 1}`;
       return {
@@ -63,25 +65,25 @@ const MeetingCard = ({
       if (dateString.includes('Invalid Date') || !dateString || dateString === 'undefined') {
         return 'No date';
       }
-      
+
       // Try parsing as ISO string or direct Date constructor
       date = new Date(dateString);
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return dateString; // Return original if can't parse
       }
-      
+
       const now = new Date();
       const diffTime = date.getTime() - now.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       if (diffDays === 0) return "Today";
       if (diffDays === 1) return "Tomorrow";
       if (diffDays === -1) return "Yesterday";
       if (diffDays > 1 && diffDays <= 7) return `In ${diffDays} days`;
       if (diffDays < -1 && diffDays >= -7) return `${Math.abs(diffDays)} days ago`;
-      
+
       return date.toLocaleDateString('en-US', { 
         month: 'short', 
         day: 'numeric',
@@ -97,12 +99,12 @@ const MeetingCard = ({
       if (dateString.includes('Invalid Date') || !dateString || dateString === 'undefined') {
         return 'No time';
       }
-      
+
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
         return 'No time';
       }
-      
+
       return date.toLocaleTimeString('en-US', { 
         hour: '2-digit', 
         minute: '2-digit',
@@ -113,6 +115,15 @@ const MeetingCard = ({
     }
   };
 
+const openWindow = () => {
+  const pdfUrl = `/api/download-pdf/${callId}`;
+  const link = document.createElement('a');
+  link.href = pdfUrl;
+  link.setAttribute('download', `call-${callId}.pdf`); // filename for download
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 
 const getDateLabel = (someDate: Date) => {
@@ -143,17 +154,23 @@ const getDateLabel = (someDate: Date) => {
   return (
     <div className="group bg-dark-1  rounded-xl p-6 border border-dark-3 hover:border-blue-1/30 transition-all duration-300 hover:shadow-lg hover:shadow-black/20">
       {/* Header */}
-      <div className="flex items-start justify-between mb-4 ">
-        <div className="flex items-center gap-3 ">
-          <div className="bg-blue-1/10 p-2 rounded-lg">
-            <Image src={icon} alt="meeting" width={20} height={20} />
-          </div>
+      <div className="flex items-start flex-col sm:flex-row justify-between mb-4 ">
+        <div className="flex flex-col sm:flex-row items-center gap-3 ">
+         
           <div>
-             <h3 className="text-lg break-all font-semibold text-white  group-hover:text-blue-1 transition-colors">
+
+            <div className="flex items-start  justify-center ">
+               <div className="bg-blue-1/10 mr-2 ml-[-5px] p-2 rounded-lg">
+            <Image src={icon} alt="meeting" width={15} height={15} />
+          </div>
+  <h3 className="text-lg sm:w-[86%] w-full font-semibold text-white  group-hover:text-blue-1 transition-colors">
                    {title}
              </h3>
 
-            <div className="flex items-center gap-4 mt-1">
+            </div>
+           
+
+            <div className="flex items-center gap-4 mt-3 sm:mt-1">
               <div className="flex items-center gap-1 text-sky-2 text-sm">
                 <Calendar className="w-3 h-3" />
                     <span>{getDateLabel(new Date(date))}</span>
@@ -165,11 +182,11 @@ const getDateLabel = (someDate: Date) => {
             </div>
           </div>
         </div>
-        
+
         {/* Status Badge */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center mt-5 sm:mt-0 gap-2">
           {joinedViaLink && (
-            <div className="px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-500">
+            <div className="px-2 py-1 w-[80px] text-center rounded-full text-xs font-medium bg-purple-500/20 text-purple-500">
               Via Link
             </div>
           )}
@@ -189,7 +206,7 @@ const getDateLabel = (someDate: Date) => {
       </div>
 
       {/* Participants */}
-      {!hideParticipants && (
+        {!hideParticipants && (
         <div className="flex items-center gap-3 mb-6">
           <div className="flex -space-x-2">
             {callMembers.slice(0, 4).map((member, index) => (
@@ -213,9 +230,10 @@ const getDateLabel = (someDate: Date) => {
             <span>{memberCount} participant{memberCount !== 1 ? 's' : ''}</span>
           </div>
         </div>
-      )}
+              )}
 
-      {/* Actions */}
+
+   {/* Actions */}
       <div className="flex items-center justify-between">
         {/* Show appropriate buttons based on meeting status */}
         {isOngoing ? (
@@ -262,8 +280,10 @@ const getDateLabel = (someDate: Date) => {
             </Button>
           </>
         ) : (
-          <div className="flex items-center gap-2 text-sky-2">
-            <span className="text-sm">Meeting ended</span>
+          <div className="flex items-center justify-between w-full gap-2 text-sky-2">
+            <span className="sm:text-sm text-[12px]">Meeting ended</span>
+
+            <button onClick={() => openWindow()} className="text-[12px] px-2 py-1 rounded-md sm:text-sm hover:bg-green-700 bg-green-600 sm:px-4 sm:rounded-md sm:py-2">Download PDF</button>
           </div>
         )}
       </div>

@@ -96,10 +96,11 @@ const CallList = ({ type, sortBy }: { type: 'ended' | 'upcoming' | 'recordings',
           const call = meeting as Call;
           const now = new Date();
           let isOngoing = false;
-          let viaLink = false;
+           let viaLink = false;
           // Detect instant meeting: description is 'Instant Meeting' or missing
           const isInstantMeeting = (call?.state?.custom?.description || '').trim().toLowerCase() === 'instant meeting' || !call?.state?.custom?.description;
-          
+
+        
           // Only check for ongoing status in upcoming meetings
           if (type === 'upcoming' && call.state?.startsAt) {
             const startTime = new Date(call.state.startsAt);
@@ -125,9 +126,12 @@ const CallList = ({ type, sortBy }: { type: 'ended' | 'upcoming' | 'recordings',
           } catch (_) {
             // ignore
           }
+
+         
           
           return (
-            <MeetingCard
+            <div>
+              <MeetingCard
               key={(meeting as Call).id}
               icon={
                 type === 'ended'
@@ -153,6 +157,7 @@ const CallList = ({ type, sortBy }: { type: 'ended' | 'upcoming' | 'recordings',
                   ? (meeting as CallRecording).url
                   : `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${(meeting as Call).id}`
               }
+              
               buttonIcon1={type === 'recordings' ? '/icons/play.svg' : undefined}
               buttonText={type === 'recordings' ? 'Play' : (type === 'ended' && !isOngoing ? undefined : 'Start')}
               joinedViaLink={viaLink}
@@ -163,7 +168,13 @@ const CallList = ({ type, sortBy }: { type: 'ended' | 'upcoming' | 'recordings',
                   ? () => router.push(`${(meeting as CallRecording).url}`)
                   : () => router.push(`/meeting/${(meeting as Call).id}`)
               }
+              
+              callId={call?.id}
+
+              
             />
+            </div>
+            
           );
         })
       ) : (
