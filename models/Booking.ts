@@ -11,7 +11,10 @@ export interface IBooking extends Document {
   meetingLink?: string;
   createdAt: Date;
   updatedAt: Date;
+  transcriptPdf?: Buffer; // Binary data for PDF
+  transcriptText?: String; // Text transcription
 }
+
 
 const bookingSchema = new Schema<IBooking>({
   menteeId: {
@@ -39,15 +42,26 @@ const bookingSchema = new Schema<IBooking>({
   },
   duration: {
     type: Number,
-    default: 60, // 60 minutes default
+    default: 60,
   },
   meetingLink: {
     type: String,
     default: '',
   },
+
+  // New fields to store transcription PDF and text
+  transcriptPdf: {
+    type: Buffer,  
+    required: false,
+  },
+  transcriptText: {
+    type: String,
+    required: false,
+  },
 }, {
   timestamps: true,
 });
+
 
 // Index for efficient queries
 bookingSchema.index({ menteeId: 1, scheduledDateTime: 1 });

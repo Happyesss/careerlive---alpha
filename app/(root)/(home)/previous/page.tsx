@@ -8,6 +8,7 @@ const PreviousPage = () => {
   const { endedCalls, isLoading } = useGetCalls();
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'duration'>('newest');
 
+
   // Calculate total completed (all ended meetings)
   const completedMeetings = endedCalls || [];
   return (

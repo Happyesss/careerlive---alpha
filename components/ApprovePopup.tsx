@@ -96,7 +96,7 @@ const ApprovePopup: React.FC<ApprovePopupProps> = ({ data,onClose,fetchPendingBo
   }, [selectedMentee]);
 
   
-console.log(formData)
+// console.log(formData)
   // Generate meeting link using Stream Video
 
   const generateMeetingLink = async () => {
@@ -256,7 +256,7 @@ console.log(formData)
 
   return (
     <div className='fixed inset-0 w-full flex items-center justify-center bg-black bg-opacity-50 z-50'>
-      <Card id='scheduler-form' className='bg-dark-2 border-dark-3 p-6'>
+      <Card id='scheduler-form' className='bg-dark-2 sm:w-auto w-[350px] border-dark-3 p-6'>
         <div className='flex w-[600px] items-center justify-between mb-4'>
           <h2 className='text-lg font-semibold text-white'>Approve Booking</h2>
             <img src="/icons/add-meeting.svg" onClick={onClose} className='text-white h-5 cursor-pointer rotate-45 w-5' alt="" />
